@@ -18,7 +18,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    QStringList files_names = QFileDialog::getOpenFileNames(this, "Cambiar nombre", "E:/games/Invincible");
+    QString replacement = ui->le_replacement_text->text().trimmed();
+    QString splitter = ui->le_splitter->text().trimmed();
+    QString format = ui->le_format->text().trimmed();
+
+    QStringList files_names = QFileDialog::getOpenFileNames(this, "Seleccione los archivos a modificar", "E:/games/Invincible");
     QString file_name;
     foreach(file_name, files_names){
         QFile file(file_name);
@@ -28,18 +32,18 @@ void MainWindow::on_pushButton_clicked()
         split.removeLast();
         QString dir = split.join("/");
 
-        if(newName.contains("Invencible") && newName.contains("#")){
-            QString number = newName.split("#").last().replace(".mp4", "").trimmed();
+        if(newName.contains(replacement) && newName.contains(splitter)){
+            QString number = newName.split(splitter).last().replace(format, "").trimmed();
             number = number.split(" ").first().trimmed();
             while(number.length() < 3){
                 number.prepend("0");
             }
 
-            newName = newName.split("#").first().trimmed();
-            newName = newName.replace("Invencible", "").trimmed();
+            newName = newName.split(splitter).first().trimmed();
+            newName = newName.replace(replacement, "").trimmed();
             newName = newName.replace("_", "").trimmed();
 
-            newName = "Invencible #" + number + " - " + newName + ".mp4";
+            newName = replacement + " " + splitter + number + " - " + newName + format;
             newName.prepend(dir + "/");
             if(file.exists()){
                 file.rename(newName);
